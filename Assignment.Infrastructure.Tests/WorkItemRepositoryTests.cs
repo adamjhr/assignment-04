@@ -9,6 +9,8 @@ public class WorkItemRepositoryTests
     private readonly SqliteConnection _connection;
     private KanbanContext _context;
     private IWorkItemRepository _repository;
+    private ITagRepository _tagRepository;
+    private IUserRepository _userRepository;
 
     public WorkItemRepositoryTests() 
     {
@@ -19,6 +21,8 @@ public class WorkItemRepositoryTests
         _context.Database.EnsureCreated();
 
         _repository = new WorkItemRepository(_context);
+        _tagRepository = new TagRepository(_context);
+        _userRepository = new UserRepository(_context);
     }
 
 
@@ -218,15 +222,13 @@ public class WorkItemRepositoryTests
     [Fact]
     public void ReadByUser_New_Returns_2() {
         
-        var userRepo = new UserRepository(_context);
-        var user1 = userRepo.Create(new Core.UserCreateDTO("name", "email1"));
-        var user2 = userRepo.Create(new Core.UserCreateDTO("name", "email2"));
+        var user1 = _userRepository.Create(new Core.UserCreateDTO("name", "email1"));
+        var user2 = _userRepository.Create(new Core.UserCreateDTO("name", "email2"));
         _repository.Create(new Core.WorkItemCreateDTO("workItem1", user1.UserId, null, new List<string> {}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem2", null, null, new List<string> {}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem3", null, null, new List<string> {}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem4", user1.UserId, null, new List<string> {}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem5", user2.UserId, null, new List<string> {}));
-
      
         var total = _repository.ReadByUser(user1.UserId).Count();
 
@@ -236,10 +238,9 @@ public class WorkItemRepositoryTests
     [Fact]
     public void ReadByTag_New_Returns_3() {
 
-        var tagRepo = new TagRepository(_context);
-        tagRepo.Create(new Core.TagCreateDTO("tag1"));
-        tagRepo.Create(new Core.TagCreateDTO("tag2"));
-        tagRepo.Create(new Core.TagCreateDTO("tag3"));
+        _tagRepository.Create(new Core.TagCreateDTO("tag1"));
+        _tagRepository.Create(new Core.TagCreateDTO("tag2"));
+        _tagRepository.Create(new Core.TagCreateDTO("tag3"));
         _repository.Create(new Core.WorkItemCreateDTO("workItem1", null, null, new List<string> {"tag1"}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem2", null, null, new List<string> {"tag2"}));
         _repository.Create(new Core.WorkItemCreateDTO("workItem3", null, null, new List<string> {"tag1", "tag3"}));
@@ -262,5 +263,6 @@ public class WorkItemRepositoryTests
         var workItemTitle = readWorkItem.Title;
 
         workItemTitle.Should().Be("workItem1");
+    }
 
 }

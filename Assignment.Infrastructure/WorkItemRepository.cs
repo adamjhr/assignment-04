@@ -8,13 +8,13 @@ namespace Assignment.Infrastructure;
 
 public class WorkItemRepository : IWorkItemRepository
 {
-    private KanbanContext _context;
+    private readonly KanbanContext _context;
     public WorkItemRepository(KanbanContext context)
     {
         _context = context;
     }
 
-    public (Response Response, int ItemId) Create(WorkItemCreateDTO workItem)
+    (Response Response, int ItemId) IWorkItemRepository.Create(WorkItemCreateDTO workItem)
     {   
 
         var workItemEntity = new WorkItem(workItem.Title);
