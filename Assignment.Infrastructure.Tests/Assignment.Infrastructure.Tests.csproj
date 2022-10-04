@@ -26,10 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Assignment.Infrastructure\Assignment.Infrastructure.csproj" />
+    <ProjectReference Include="..\Assignment.Core\Assignment.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0-rc.1.22426.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
