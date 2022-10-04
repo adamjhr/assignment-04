@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Assignment.Infrastructure;
 
-namespace Assignment3.Infrastructure;
+namespace Assignment.Infrastructure;
 
 public class UserRepository : IUserRepository
 {

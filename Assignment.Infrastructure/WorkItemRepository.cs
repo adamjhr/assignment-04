@@ -18,19 +18,17 @@ public class WorkItemRepository : IWorkItemRepository
     {   
 
         var workItemEntity = new WorkItem(workItem.Title);
-        workItemEntity.AssignedToId = workItem.AssignedToId;
+
+        if (workItem.AssignedToId != null) {
+            var assignedTo = _context.Users.Find(workItem.AssignedToId)!;
+            if (assignedTo == null) return (Response.BadRequest, 0);
+            workItemEntity.AssignedTo = assignedTo;
+        }
+
         workItemEntity.Description = workItem.Description;
 
         // var tags = from tag in _context.Tags where workItem.Tags.Contains(tag.Name) select tag;
         // var tagList = tags.ToList();
-
-
-        // ??
-        // User assignedTo = new User();
-        // if (workItem.AssignedToId != null) {
-        //     assignedTo = _context.Users.Find(workItem.AssignedToId)!;
-        //     if (assignedTo == null) return (Response.BadRequest, 0);
-        // }
         
         _context.Items.Add(workItemEntity);
         _context.SaveChanges();
@@ -66,7 +64,7 @@ public class WorkItemRepository : IWorkItemRepository
 
         if (queryResult == null) return null!;
 
-        var workItemDTOs = queryResult.WorkItems.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, workItem.AssignedTo!.Name,
+        var workItemDTOs = queryResult.WorkItems.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, (workItem.AssignedTo is null ? null : workItem.AssignedTo.Name)!,
             workItem.Tags.Select(t => t.Name).ToImmutableList(), workItem.State)).ToImmutableList();
         
         return workItemDTOs;
@@ -79,7 +77,7 @@ public class WorkItemRepository : IWorkItemRepository
         
         if (queryResult == null) return null!;
 
-        var workItemDTOs = queryResult.Items.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, workItem.AssignedTo!.Name,
+        var workItemDTOs = queryResult.Items.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, (workItem.AssignedTo is null ? null : workItem.AssignedTo.Name)!,
             workItem.Tags.Select(t => t.Name).ToImmutableList(), workItem.State)).ToImmutableList();
         
         return workItemDTOs;
@@ -93,7 +91,7 @@ public class WorkItemRepository : IWorkItemRepository
             .Include(t => t.Tags)
             .Where(t => t.State == state)
             .ToList();
-        var workItemDTOs = queryResult.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, workItem.AssignedTo!.Name,
+        var workItemDTOs = queryResult.Select(workItem => new WorkItemDTO(workItem.Id, workItem.Title, (workItem.AssignedTo is null ? null : workItem.AssignedTo.Name)!,
             workItem.Tags.Select(t => t.Name).ToImmutableList(), workItem.State)).ToImmutableList();
         return workItemDTOs;
     }
@@ -104,7 +102,7 @@ public class WorkItemRepository : IWorkItemRepository
 
         if (workItem == null) return null!;
 
-        return new WorkItemDetailsDTO(workItem.Id, workItem.Title, workItem.Description!, workItem.CreatedDate, workItem.AssignedTo!.Name, workItem.Tags.Select(tag => tag.Name).ToImmutableList(),
+        return new WorkItemDetailsDTO(workItem.Id, workItem.Title, workItem.Description!, workItem.CreatedDate, (workItem.AssignedTo is null ? null : workItem.AssignedTo.Name)!, workItem.Tags.Select(tag => tag.Name).ToImmutableList(),
             workItem.State, workItem.StateUpdated);
     }
 

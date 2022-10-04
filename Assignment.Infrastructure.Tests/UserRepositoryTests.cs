@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Assignment.Infrastructure;
 using Assignment.Core;
 
-namespace Assignment3.Entities.Tests;
+namespace Assignment.Infrastructure.Tests;
 
 public class UserRepositoryTests
 {

@@ -236,25 +236,6 @@ public class WorkItemRepositoryTests
     }
 
     [Fact]
-    public void ReadByTag_New_Returns_3() {
-
-        _tagRepository.Create(new Core.TagCreateDTO("tag1"));
-        _tagRepository.Create(new Core.TagCreateDTO("tag2"));
-        _tagRepository.Create(new Core.TagCreateDTO("tag3"));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem1", null, null, new List<string> {"tag1"}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem2", null, null, new List<string> {"tag2"}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem3", null, null, new List<string> {"tag1", "tag3"}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem4", null, null, new List<string> {}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem5", null, null, new List<string> {"tag3"}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem6", null, null, new List<string> {}));
-        _repository.Create(new Core.WorkItemCreateDTO("workItem7", null, null, new List<string> {"tag1", "tag2", "tag3"}));
-
-        var total = _repository.ReadByTag("tag1").Count();
-
-        total.Should().Be(3);
-    }
-
-    [Fact]
     public void Read_WorkItem_Returns_Title_workItem1() {
 
         var workItem = _repository.Create(new Core.WorkItemCreateDTO("workItem1", null, null, new List<string> {}));
