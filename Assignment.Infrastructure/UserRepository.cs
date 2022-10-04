@@ -1,41 +1,97 @@
-namespace Assignment.Infrastructure;
+using System.Collections.Immutable;
+using Assignment.Infrastructure;
+
+namespace Assignment3.Infrastructure;
 
 public class UserRepository : IUserRepository
 {
+
     private KanbanContext _context;
     public UserRepository(KanbanContext context)
     {
-        _context = context;
-    }
-    public (Response Response, int UserId) Create(UserCreateDTO user)
-    {
-        throw new NotImplementedException();
+        _context = context;   
     }
 
-    public Response Delete(int userId, bool force = false)
+    (Response Response, int UserId) IUserRepository.Create(UserCreateDTO user) 
     {
-        throw new NotImplementedException();
-    }
+        var entity = _context.Users.FirstOrDefault(u => u.Email == user.Email);
 
-    public UserDTO Find(int userId)
-    {
-        foreach (var user in _context.Users)
+        Response response;
+
+        if (entity is null)
         {
-            if (user.Id == userId)
-            {
-                return new UserDTO(user.Id, user.Name, user.Email);
-            }
+            entity = new User(user.Name, user.Email);
+
+            _context.Users.Add(entity);
+            _context.SaveChanges();
+
+            response = Response.Created;
         }
-        return null!;
+        else
+        {
+            response = Response.Conflict;
+        }
+
+        return (response, entity.Id);
     }
 
-    public IReadOnlyCollection<UserDTO> Read()
+    IReadOnlyCollection<UserDTO> IUserRepository.Read() 
     {
-        throw new NotImplementedException();
+        List<UserDTO> list = new ();
+        var entity = _context.Users;
+
+        foreach (var e in entity) {
+            list.Add(new UserDTO(e.Id, e.Name, e.Email));
+        }
+        
+        return list;
     }
 
-    public Response Update(UserUpdateDTO user)
+    UserDTO IUserRepository.Find(int userId) 
     {
-        throw new NotImplementedException();
+        var entity = _context.Users.FirstOrDefault(u => u.Id == userId);
+        if (entity is null) return null!;
+        return new UserDTO(userId, entity!.Name, entity.Email); 
+    }
+
+    Response IUserRepository.Update(UserUpdateDTO user) 
+    {
+        var entity = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        entity!.Id = user.Id;
+        entity.Name = user.Name;
+        entity.Email = user.Email;
+
+        if (entity is null) 
+        {
+            return Response.NotFound;
+        }
+        else
+        {
+            _context.Users.Update(entity);
+            _context.SaveChanges();
+
+            return Response.Updated;
+        }
+    }
+
+    Response IUserRepository.Delete(int userId, bool force = false) 
+    {
+        var entity = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        Response response;
+
+        if (entity is null)
+            response = Response.NotFound;
+        else if (entity is null || force)
+        {
+            _context.Users.Remove(entity!);
+            _context.SaveChanges();
+
+            response = Response.Deleted;
+        }
+        else response = Response.Conflict;
+
+        return response;
     }
 }
+ 
