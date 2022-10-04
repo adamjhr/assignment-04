@@ -53,7 +53,7 @@ public class TagRepositoryTests : IDisposable
         id.Should().Be(1);
     }
 
-    /*[Fact]
+    [Fact]
     public void Delete_non_existing_tag_should_give_not_found()
     {
         // Given
@@ -81,7 +81,7 @@ public class TagRepositoryTests : IDisposable
     
         // Then
         response.Should().Be(Response.Deleted);
-    }*/
+    }
 
     [Fact]
     public void Read_with_existing_tag_returning_TagDTO()
@@ -108,8 +108,6 @@ public class TagRepositoryTests : IDisposable
     {
         // Given
         var tags = _repository.Read();
-    
-        // When
     
         // Then
         tags.Should().BeEquivalentTo(new List<TagDTO>(){new TagDTO(1, "Tag1"), new TagDTO(2, "Tag2")});
